@@ -1,0 +1,10 @@
+Pillow
+numpy
+scikit-image
+scipy
+tqdm
+Shapely
+imgaug
+imageio
+imgaug
+opencv-python
