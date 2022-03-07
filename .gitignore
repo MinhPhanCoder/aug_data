@@ -129,5 +129,4 @@ dmypy.json
 .pyre/
 
 #MinhPhan
-.idea/
-datatset/output
+/datatset/.idea/
