@@ -1,0 +1,127 @@
+{
+  "bg1.jpg27200": {
+    "filename": "bg1.jpg",
+    "size": 27200,
+    "regions": [
+      {
+        "shape_attributes": {
+          "name": "polygon",
+          "all_points_x": [
+            122,
+            341,
+            555
+          ],
+          "all_points_y": [
+            613,
+            272,
+            612
+          ]
+        },
+        "region_attributes": {
+          "class": {
+            "triangle": true
+          }
+        }
+      },
+      {
+        "shape_attributes": {
+          "name": "polygon",
+          "all_points_x": [
+            421,
+            423,
+            762,
+            761
+          ],
+          "all_points_y": [
+            236,
+            56,
+            55,
+            235
+          ]
+        },
+        "region_attributes": {
+          "class": {
+            "quadrilateral": true
+          }
+        }
+      }
+    ],
+    "file_attributes": { }
+  },
+  "bg2.jpg21531": {
+    "filename": "bg2.jpg",
+    "size": 21531,
+    "regions": [
+      {
+        "shape_attributes": {
+          "name": "polygon",
+          "all_points_x": [
+            164,
+            165,
+            725
+          ],
+          "all_points_y": [
+            611,
+            301,
+            611
+          ]
+        },
+        "region_attributes": {
+          "class": {
+            "triangle": true
+          }
+        }
+      }
+    ],
+    "file_attributes": { }
+  },
+  "bg3.jpg35967": {
+    "filename": "bg3.jpg",
+    "size": 35967,
+    "regions": [
+      {
+        "shape_attributes": {
+          "name": "polygon",
+          "all_points_x": [
+            28,
+            32,
+            330
+          ],
+          "all_points_y": [
+            231,
+            11,
+            232
+          ]
+        },
+        "region_attributes": {
+          "class": {
+            "triangle": true
+          }
+        }
+      },
+      {
+        "shape_attributes": {
+          "name": "polygon",
+          "all_points_x": [
+            380,
+            560,
+            739,
+            563
+          ],
+          "all_points_y": [
+            359,
+            104,
+            358,
+            617
+          ]
+        },
+        "region_attributes": {
+          "class": {
+            "quadrilateral": true
+          }
+        }
+      }
+    ],
+    "file_attributes": { }
+  }
+}

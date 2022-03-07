@@ -55,7 +55,7 @@ def random_foreground(foregrounds_dict):
 def random_x_y_paste(background_img, foreground_img):
     max_x_position = background_img.size[0] - foreground_img.size[0]
     max_y_position = background_img.size[1] - foreground_img.size[1]
-    assert max_x_position >= 0 and max_y_position >= 0, "kích thước ảnh dán lớn hơn kích thước background"
+    assert max_x_position >= 0 and max_y_position >= 0, "size foreground > size background"
     paste_position = (random.randint(0, max_x_position), random.randint(0, max_y_position))
     return paste_position
 
@@ -74,7 +74,7 @@ def is_overlap_polygon(p1, p2):
 
 
 def check_overlap_ls_polygon(p1, ls_polygon):
-    # check a polygon with list polygon
+    # Check a polygon with list polygon
     for polygon in ls_polygon:
         if is_overlap_polygon(p1, polygon):
             return True

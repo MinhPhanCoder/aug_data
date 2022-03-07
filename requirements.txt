@@ -1,10 +1,9 @@
-Pillow
-numpy
-scikit-image
-scipy
 tqdm
-Shapely
+numpy
+scipy
+Pillow
 imgaug
 imageio
-imgaug
+Shapely
+scikit-image
 opencv-python

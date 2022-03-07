@@ -9,7 +9,7 @@ from shapely.geometry import Polygon
 from synth_validate.validate import Validate
 from synth_utils.utils_load_data import CustomDataset
 from synth_utils import utils_synth, utils_write_label
-from synth_augimg.aug import aug_img_fg_custom, aug_img_bg_custom
+from synth_augimg.aug import aug_foreground, aug_background
 
 
 class ImageComposition(Validate):
@@ -22,7 +22,7 @@ class ImageComposition(Validate):
         self.mask_colors = [(255, 255, 255)]
         if not synth_config.paste_all_position:
             self.data_position_backgrounds = CustomDataset()
-            self.data_position_backgrounds.load_Custom(self.input_dir / "backgrounds")
+            self.data_position_backgrounds.load_dataset(self.input_dir / "backgrounds")
             self.data_position_backgrounds.prepare()
 
     def generate_images(self):
@@ -41,7 +41,7 @@ class ImageComposition(Validate):
 
     def _compose_images(self, lst_path_foregrounds, path_background):
         # Open background and convert to RGBA
-        img_background = aug_img_bg_custom(path_background)
+        img_background = aug_background(path_background)
         if not synth_config.paste_all_position:
             lst_polygon_bg = self.position_enable_paste(path_background)
         else:
@@ -57,7 +57,7 @@ class ImageComposition(Validate):
             chk_pasted = False
             while not chk_pasted:
                 # Aug foreground
-                img_foreground = aug_img_fg_custom(foreground['foreground_path'])
+                img_foreground = aug_foreground(foreground['foreground_path'])
                 paste_position = utils_synth.random_x_y_paste(img_background, img_foreground)
                 polygon_paste = self.get_polygon_paste(img_background, img_foreground, paste_position)
                 if polygon_paste is None:
