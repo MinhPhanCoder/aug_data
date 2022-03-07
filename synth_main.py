@@ -9,7 +9,8 @@ from shapely.geometry import Polygon
 from synth_validate.validate import Validate
 from synth_utils.utils_load_data import CustomDataset
 from synth_utils import utils_synth, utils_write_label
-from synth_augimg.aug import aug_foreground, aug_background
+from synth_aug.aug import aug_foreground, aug_background
+from typing import List, Tuple, Dict, Union
 
 
 class ImageComposition(Validate):
@@ -39,18 +40,18 @@ class ImageComposition(Validate):
         utils_write_label.export_json_output_custom(dict_full_polygon_op, self.output_dir / 'images')
         utils_synth.write_pkl(Path(self.output_dir) / 'masks' / 'mask_definitions.pkl', dict_full_polygon_op)
 
-    def _compose_images(self, lst_path_foregrounds, path_background):
+    def _compose_images(self, lst_path_foregrounds: List[str], path_background: str) -> Tuple[object, object, List[List]]:
         # Open background and convert to RGBA
         img_background = aug_background(path_background)
+        composite_mask = np.array(Image.new('L', img_background.size, 0))
+        lst_polygon_bg: List[Polygon]
         if not synth_config.paste_all_position:
             lst_polygon_bg = self.position_enable_paste(path_background)
         else:
             lst_polygon_bg = [Polygon([(0, 0),
                                       (0, img_background.size[1]),
                                       (img_background.size[0], img_background.size[1]),
-                                      (img_background.size[0], 0)])
-                             ]
-        composite_mask = np.array(Image.new('L', img_background.size, 0))
+                                      (img_background.size[0], 0)])]
         ls_pasted = []
         ls_all_polygon = []
         for foreground in lst_path_foregrounds:
@@ -65,26 +66,26 @@ class ImageComposition(Validate):
                 chk_pasted = self.chk_enable_paste(polygon_paste, lst_polygon_bg, ls_pasted)
             img_background, new_alpha_mask = self.paste_foreground_to_background(img_background, img_foreground, paste_position)
             composite_mask += np.array(new_alpha_mask)
-            ls_all_polygon.append([polygon_paste, foreground['super_category'], foreground['category']])
+            ls_all_polygon.append([polygon_paste, foreground['sub_category'], foreground['category']])
         composite_mask = Image.fromarray(composite_mask, 'L')
         return img_background, composite_mask, ls_all_polygon
 
-    def random_foregrounds(self, num_foregrounds):
+    def random_foregrounds(self, num_foregrounds: int) -> List[Dict]:
         lst_path_foregrounds = []
         for _ in range(num_foregrounds):
-            super_category, category, path_foreground = utils_synth.random_foreground(self.foregrounds_dict)
+            sub_category, category, path_foreground = utils_synth.random_foreground(self.foregrounds_dict)
             lst_path_foregrounds.append({
-                'super_category': super_category,
+                'sub_category': sub_category,
                 'category': category,
                 'foreground_path': path_foreground
             })
         return lst_path_foregrounds
 
-    def position_enable_paste(self, path_background):
+    def position_enable_paste(self, path_background: str) -> List[Polygon]:
         lst_position_enable_paste = self.data_position_backgrounds.get_polygon_with_name(os.path.basename(path_background))
         return utils_synth.convert2polygon(lst_position_enable_paste)
 
-    def save_img_generator(self, img_composite, img_mask, save_filename):
+    def save_img_generator(self, img_composite: object, img_mask: object, save_filename: str):
         path_composite = self.output_dir / 'images' / f'{save_filename}{self.output_type}'
         # Remove alpha channel
         img_composite = img_composite.convert('RGB')
@@ -94,7 +95,7 @@ class ImageComposition(Validate):
         img_mask.save(path_mask)
 
     @staticmethod
-    def get_polygon_paste(img_background, img_foreground, paste_position):
+    def get_polygon_paste(img_background: object, img_foreground: object, paste_position: Tuple[int, int, int, int]) -> Union[None, Polygon]:
         alpha_mask = img_foreground.getchannel(3)
         background_mask = Image.new('L', img_background.size, color=0)
         background_mask.paste(alpha_mask, paste_position)
@@ -104,8 +105,8 @@ class ImageComposition(Validate):
         return polygon_paste
 
     @staticmethod
-    def chk_enable_paste(polygon_paste, ls_polygon_bg, ls_pasted):
-        if not utils_synth.check_overlap_ls_polygon(polygon_paste, ls_pasted):
+    def chk_enable_paste(polygon_paste: Polygon, ls_polygon_bg: List[Polygon], ls_pasted: List[Polygon]) -> bool:
+        if not utils_synth.check_overlap_in_lstpolygon(polygon_paste, ls_pasted):
             for polygon_bg in ls_polygon_bg:
                 if polygon_bg.contains(polygon_paste):
                     ls_pasted.append(polygon_paste)
@@ -113,7 +114,7 @@ class ImageComposition(Validate):
         return False
 
     @staticmethod
-    def paste_foreground_to_background(img_background, img_foreground, paste_position):
+    def paste_foreground_to_background(img_background: object, img_foreground: object, paste_position: Tuple[int, int, int, int]) -> Tuple[object, object]:
         new_foreground_image = Image.new('RGBA', img_background.size, color=(0, 0, 0, 0))
         new_foreground_image.paste(img_foreground, paste_position)
         alpha_mask = img_foreground.getchannel(3)

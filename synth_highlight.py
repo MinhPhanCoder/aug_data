@@ -1,11 +1,12 @@
 import argparse
 import numpy as np
+from typing import List
 from pathlib import Path
 from synth_utils import utils_visualize
 from synth_utils.utils_load_data import CustomDataset
 
 
-def get_parse_hl():
+def get_parse_hl() -> argparse:
     parser = argparse.ArgumentParser(description="Image Composition")
     parser.add_argument("--input_dir", type=str, dest="input_dir", required=True,
                         help="Folder containing photos to highlight")
@@ -16,7 +17,7 @@ def get_parse_hl():
     return parser
 
 
-def extract_bboxes(mask):
+def extract_bboxes(mask: object) -> List[List]:
     boxes = np.zeros([mask.shape[-1], 4], dtype=np.int32)
     for i in range(mask.shape[-1]):
         m = mask[:, :, i]
@@ -33,17 +34,17 @@ def extract_bboxes(mask):
     return boxes.astype(np.int32)
 
 
-def highlight_img(args):
-    CustomDS = CustomDataset()
-    CustomDS.load_dataset(Path(args.input_dir))
-    CustomDS.prepare()
-    for image_id in CustomDS.image_ids[0:args.count]:
-        image = CustomDS.load_image(image_id)
-        mask, class_ids = CustomDS.load_mask(image_id)
+def highlight_img(args: argparse):
+    dataset = CustomDataset()
+    dataset.load_dataset(Path(args.input_dir))
+    dataset.prepare()
+    for image_id in dataset.image_ids[0:args.count]:
+        image = dataset.load_image(image_id)
+        mask, class_ids = dataset.load_mask(image_id)
         bbox = extract_bboxes(mask)
-        print("image_id ", image_id, CustomDS.image_reference(image_id))
-        fn = str(Path(args.output_dir) / CustomDS.image_info[image_id]["id"])
-        utils_visualize.display_instances(image, bbox, mask, class_ids, CustomDS.class_names, path_save=fn)
+        print("image_id ", image_id, dataset.image_reference(image_id))
+        fn = str(Path(args.output_dir) / dataset.image_info[image_id]["id"])
+        utils_visualize.display_instances(image, bbox, mask, class_ids, dataset.class_names, path_save=fn)
 
 
 if __name__ == "__main__":

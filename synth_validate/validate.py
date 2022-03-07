@@ -1,4 +1,5 @@
 import warnings
+import argparse
 from pathlib import Path
 
 
@@ -6,7 +7,7 @@ class Validate:
     allowed_output_types = ['.png', '.jpg', '.jpeg']
     allowed_background_types = ['.png', '.jpg', '.jpeg']
 
-    def _validate_and_process_args(self, args):
+    def _validate_and_process_args(self, args: argparse):
         self.silent = args.silent
         # Check count
         assert args.count > 0, "'count' must be greater than 0"
@@ -22,7 +23,7 @@ class Validate:
         self._validate_and_process_output_directory(args)
         self._validate_and_process_input_directory(args)
 
-    def _validate_and_process_input_directory(self, args):
+    def _validate_and_process_input_directory(self, args: argparse):
         self.input_dir = Path(args.input_dir)
         assert self.input_dir.exists(), f'Input path does not exist: {args.input_dir}'
         for x in self.input_dir.iterdir():
@@ -35,7 +36,7 @@ class Validate:
         self._validate_and_process_foregrounds()
         self._validate_and_process_backgrounds()
 
-    def _validate_and_process_output_directory(self, args):
+    def _validate_and_process_output_directory(self, args: argparse):
         self.output_dir = Path(args.output_dir)
         self.images_output_dir = self.output_dir / 'images'
         self.masks_output_dir = self.output_dir / 'masks'
@@ -90,13 +91,13 @@ class Validate:
                         warnings.warn(f'Found images in formats other than PNG, skipping: {str(path_image_file)}')
                         continue
                     # Write to dict directory structure
-                    super_category = sub_category_dir.name
+                    sub_category = sub_category_dir.name
                     category = category_dir.name
-                    if super_category not in self.foregrounds_dict:
-                        self.foregrounds_dict[super_category] = dict()
-                    if category not in self.foregrounds_dict[super_category]:
-                        self.foregrounds_dict[super_category][category] = []
-                    self.foregrounds_dict[super_category][category].append(path_image_file)
+                    if sub_category not in self.foregrounds_dict:
+                        self.foregrounds_dict[sub_category] = dict()
+                    if category not in self.foregrounds_dict[sub_category]:
+                        self.foregrounds_dict[sub_category][category] = []
+                    self.foregrounds_dict[sub_category][category].append(path_image_file)
         assert len(self.foregrounds_dict) > 0, 'Please check your foregrounds directory structure !!!'
 
     def _validate_and_process_backgrounds(self):

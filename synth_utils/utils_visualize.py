@@ -1,13 +1,14 @@
 import random
 import colorsys
 import numpy as np
+from typing import List, Tuple
 from matplotlib import patches
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 from matplotlib.patches import Polygon
 from skimage.measure import find_contours
 
 
-def random_colors(N, bright=True):
+def random_colors(N: int, bright=True) -> List[Tuple]:
     """
     Generate random colors.
     To get visually distinct colors, generate them in HSV space then
@@ -20,7 +21,7 @@ def random_colors(N, bright=True):
     return colors
 
 
-def apply_mask(image, mask, color, alpha=0.5):
+def apply_mask(image: object, mask: object, color: Tuple, alpha=0.5) -> object:
     """
     Apply the given mask to the image.
     """
@@ -32,7 +33,7 @@ def apply_mask(image, mask, color, alpha=0.5):
     return image
 
 
-def display_instances(image, boxes, masks, class_ids, class_names,
+def display_instances(image: object, boxes, masks: object, class_ids: List[int], class_names: List[str],
                       scores=None, title="",
                       fig_size=(30, 30), ax=None,
                       show_mask=True, show_bbox=True,
@@ -105,4 +106,3 @@ def display_instances(image, boxes, masks, class_ids, class_names,
     ax.imshow(masked_image.astype(np.uint8))
     if auto_show:
         plt.savefig(path_save)
-

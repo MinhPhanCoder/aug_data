@@ -5,9 +5,10 @@ import warnings
 import cv2 as cv
 import numpy as np
 from shapely.geometry import Polygon
+from typing import List, Dict, Any, Tuple
 
 
-def get_parser():
+def get_parser() -> argparse:
     parser = argparse.ArgumentParser(description="Image Composition")
     parser.add_argument("--input_dir", type=str, dest="input_dir", required=True, help="The input directory. \
                            This contains a 'backgrounds' directory of pngs or jpgs, and a 'foregrounds' directory which \
@@ -24,35 +25,35 @@ def get_parser():
     return parser
 
 
-def show_wait_destroy(win_name, img):
+def show_wait_destroy(win_name: str, img: object):
     cv.namedWindow(win_name, 0)
     cv.imshow(win_name, img)
     cv.waitKey(0)
 
 
-def write_pkl(path, data):
+def write_pkl(path: str, data: Any):
     with open(path, 'wb') as file:
         pickle.dump(data, file)
 
 
-def load_pkl(path):
+def load_pkl(path: str) -> object:
     with open(path, 'rb') as file:
         data = pickle.load(file)
         return data
 
 
-def random_from_list(ls):
-    return random.choice(ls)
+def random_from_list(lst_obj: List) -> Any:
+    return random.choice(lst_obj)
 
 
-def random_foreground(foregrounds_dict):
+def random_foreground(foregrounds_dict: Dict) -> Tuple[str, str, str]:
     sub_category = random.choice(list(foregrounds_dict.keys()))
     category = random.choice(list(foregrounds_dict[sub_category].keys()))
     foreground_path = random.choice(foregrounds_dict[sub_category][category])
     return sub_category, category, foreground_path
 
 
-def random_x_y_paste(background_img, foreground_img):
+def random_x_y_paste(background_img: object, foreground_img:object) -> Tuple[int, int, int, int]:
     max_x_position = background_img.size[0] - foreground_img.size[0]
     max_y_position = background_img.size[1] - foreground_img.size[1]
     assert max_x_position >= 0 and max_y_position >= 0, "size foreground > size background"
@@ -60,7 +61,7 @@ def random_x_y_paste(background_img, foreground_img):
     return paste_position
 
 
-def convert2polygon(lst_position_enable_paste):
+def convert2polygon(lst_position_enable_paste: List[Dict]) -> List[Polygon]:
     ls_polygon = []
     for ele in lst_position_enable_paste:
         ls_x_y = list(zip(ele['all_points_x'], ele['all_points_y']))
@@ -68,12 +69,12 @@ def convert2polygon(lst_position_enable_paste):
     return ls_polygon
 
 
-def is_overlap_polygon(p1, p2):
+def is_overlap_polygon(p1: Polygon, p2: Polygon) -> bool:
     # Check overlap polygon coordinate
     return p1.intersects(p2)
 
 
-def check_overlap_ls_polygon(p1, ls_polygon):
+def check_overlap_in_lstpolygon(p1: Polygon, ls_polygon: List[Polygon]) -> bool:
     # Check a polygon with list polygon
     for polygon in ls_polygon:
         if is_overlap_polygon(p1, polygon):
@@ -81,7 +82,7 @@ def check_overlap_ls_polygon(p1, ls_polygon):
     return False
 
 
-def get_polygon_findcontour(image):
+def get_polygon_findcontour(image: object) -> Polygon:
     alpha_threshold = 200
     kernel = np.ones((3, 3), np.uint8)
     image = cv.dilate(image, kernel)
